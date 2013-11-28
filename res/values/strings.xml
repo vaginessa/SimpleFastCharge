@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SimpleFastCharge</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="label_about">About Simple Fast Charge</string>
+    <string name="dev_label">Developer ID</string>
+    <string name="dev_id">Tuxkids</string>
+    <string name="app_version">1.0</string>
+    <string name="app_desc">Boost charging</string>
+
+</resources>
