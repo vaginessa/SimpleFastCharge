@@ -1,12 +1,18 @@
 package com.tuxkids.simplefastcharge;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.SyncStateContract.Constants;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
@@ -15,7 +21,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class MainActivity extends Activity implements OnCheckedChangeListener {
 	ToggleButton tb;
-/** Called when the activity is first created. */
+	private final static String fastcharge = "/sys/kernel/fast_charge/force_fast_charge";
+	private final static int BUFFER_SIZE = 2048;
+	
+	/** Called when the activity is first created. */
 @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -25,19 +34,21 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		Validasi();
 		
 		//search id toggle
-		tb=(ToggleButton)findViewById(R.id.check);	
+			
 		tb.setOnCheckedChangeListener(this);
 	}
 
 	public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
 		String enable  = "echo 1 > /sys/kernel/fast_charge/force_fast_charge";
 		String disable = "echo 0 > /sys/kernel/fast_charge/force_fast_charge";
-			
+		String close = "exit";	
 		if (isChecked) {
 		execCommand(enable);
+		execCommand(close);
 			}
 		else {
 		execCommand(disable);
+		execCommand(close);
 			}
 		}
 		
@@ -45,15 +56,18 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		public void Validasi(){
 			String file = "/sys/kernel/fast_charge/force_fast_charge";
 			File myFile = new File(file);
-			
+			String getStatus = getCurrentStatus();
+			String aktif = "1";
+			//search togglebutton by ID
+			tb=(ToggleButton)findViewById(R.id.check);
 			
 			if (myFile.exists()) {
-				/*if (cek.equals("1")){
-					tb.setChecked(true);				
+				if (getStatus.equals(aktif)) {
+					tb.setChecked(true);
 				}
 				else {
 					tb.setChecked(false);
-				}*/
+				}
 			} 
 			else { 
 				//show message error when kernel not support
@@ -68,7 +82,74 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 			}
 	}
 	
+		
+
+		public static String getCurrentStatus() {
+			return readString(fastcharge);
+		}
+		 
 	
+		private static String readString(String filename) {
+			try {
+				File f = new File(filename);
+				if (f.exists()) {
+					InputStream is = null;
+					if (f.canRead()) {
+						is = new FileInputStream(f);
+					} else {
+						Log.w(Constants._COUNT, "read-only file, trying w/ root: " + filename);
+						/*
+						 * Try reading as root.
+						 */
+						String[] commands = {
+								"cat " + filename + "\n", "exit\n"
+						};
+						Process p = Runtime.getRuntime().exec(getSUbinaryPath());
+						DataOutputStream dos = new DataOutputStream(p.getOutputStream());
+						for (String command : commands) {
+							dos.writeBytes(command);
+							dos.flush();
+						}
+						if (p.waitFor() == 0) {
+							is = p.getInputStream();
+						} else {
+							// is = p.getErrorStream();
+							return null;
+						}
+					} // end-if: f.canRead()
+					BufferedReader br = new BufferedReader(new InputStreamReader(is), BUFFER_SIZE);
+					String line = br.readLine();
+					br.close();
+					return line;
+				} else {
+					/*
+					 * File does not exist.
+					 */
+					Log.e(Constants._COUNT, "file does not exist: " + filename);
+					return null;
+				}
+			} catch (InterruptedException iex) {
+				Log.e(Constants._COUNT, iex.getMessage(), iex);
+				return null;
+			} catch (IOException ioex) {
+				Log.e(Constants._COUNT, ioex.getMessage(), ioex);
+				return null;
+			}
+		}
+		
+		public static String getSUbinaryPath() {
+			String s = "/system/bin/su";
+			File f = new File(s);
+			if (f.exists()) {
+				return s;
+			}
+			s = "/system/xbin/su";
+			f = new File(s);
+			if (f.exists()) {
+				return s;
+			}
+			return null;
+		}
 
 	public Boolean execCommand(String command) 
     {
