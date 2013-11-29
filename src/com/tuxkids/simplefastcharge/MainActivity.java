@@ -43,8 +43,6 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		//search togglebutton and textView by ID
 		tv=(TextView)findViewById(R.id.status);
 		tb=(ToggleButton)findViewById(R.id.check);
-		
-		getPermission();
 		//load validasi function
 		Validasi();
 		
@@ -101,30 +99,6 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 			}
 	}
 	
-		public void getPermission(){
-			String su1 = "/system/bin/su";
-			String su2 = "/system/xbin/su";
-			File a = new File(su1);
-			File b = new File(su2);
-			
-			if ((a.exists()) || (b.exists())) {
-				
-			}
-			else {
-				Context context = getApplicationContext();
-				CharSequence text2 = "Root access not found !";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, text2, duration);
-				toast.show();
-				//disable togglebutton
-				tb.setEnabled(false);
-				tv.setText("Need root access"+"\nto run this application");
-			}
-			
-			
-		}
-		
-		
 
 		public static String getCurrentStatus() {
 			return readString(fastcharge);
