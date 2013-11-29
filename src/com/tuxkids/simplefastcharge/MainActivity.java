@@ -8,11 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.SyncStateContract.Constants;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
@@ -20,9 +26,13 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 
 public class MainActivity extends Activity implements OnCheckedChangeListener {
+	
+	AlertDialog ad;
+	TextView tv;
 	ToggleButton tb;
 	private final static String fastcharge = "/sys/kernel/fast_charge/force_fast_charge";
 	private final static int BUFFER_SIZE = 2048;
+	
 	
 	/** Called when the activity is first created. */
 @Override
@@ -39,16 +49,19 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 	}
 
 	public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+		tv=(TextView)findViewById(R.id.status);
 		String enable  = "echo 1 > /sys/kernel/fast_charge/force_fast_charge";
 		String disable = "echo 0 > /sys/kernel/fast_charge/force_fast_charge";
 		String close = "exit";	
 		if (isChecked) {
 		execCommand(enable);
 		execCommand(close);
+		tv.setText("Touch To Disable");
 			}
 		else {
 		execCommand(disable);
 		execCommand(close);
+		tv.setText("Touch To Enable");
 			}
 		}
 		
@@ -58,15 +71,20 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 			File myFile = new File(file);
 			String getStatus = getCurrentStatus();
 			String aktif = "1";
-			//search togglebutton by ID
+			
+			
+			//search togglebutton and textView by ID
+			tv=(TextView)findViewById(R.id.status);
 			tb=(ToggleButton)findViewById(R.id.check);
 			
 			if (myFile.exists()) {
 				if (getStatus.equals(aktif)) {
 					tb.setChecked(true);
+					tv.setText("Touch To Disable");
 				}
 				else {
 					tb.setChecked(false);
+					tv.setText("Touch To Enable");
 				}
 			} 
 			else { 
@@ -78,10 +96,12 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 				toast.show();
 				//disable togglebutton
 				tb.setEnabled(false);
+				tv.setText("Sorry, you're kernel not \nsupport for run this app !");
 				
 			}
 	}
 	
+		
 		
 
 		public static String getCurrentStatus() {
@@ -170,5 +190,47 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         }
         return true; 
     
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		
+		switch (item.getItemId())
+		{
+		case R.id.about :
+		alert();
+		return true;	
+		
+		default:
+		return super.onOptionsItemSelected(item);
+		}	
+	}
+	
+	public void alert (){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false)
+		       .setTitle("About")
+		       .setMessage(
+		    		"Simple Fast Charge version 1.0\n" +
+		       		"Created by : tuxkids\n\n\n\n\n\n\n" +
+		    		"+--------------------------------+\n" +
+		       		"   Contact Developer:\n" +
+		       		"   ukie.tux@gmail.com\n" +
+		       		"+--------------------------------+")
+		       .setIcon(R.drawable.ic_about)
+		       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 }

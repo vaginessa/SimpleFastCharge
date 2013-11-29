@@ -6,4 +6,7 @@
     <item
         android:state_checked="true"
         android:drawable="@drawable/ic_status_on" />
+    <item 
+        android:state_enabled="false"
+        android:drawable="@drawable/ic_status_disable"></item>
 </selector>
