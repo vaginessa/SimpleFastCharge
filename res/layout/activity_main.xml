@@ -8,13 +8,44 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <ToggleButton
-        android:id="@+id/check"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textOff="disable"
-        android:textOn="enable" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/check"
+        android:gravity="left"
+        android:text="Simple Fast Charge Version 1.0"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
+    <ToggleButton
+        android:id="@+id/check"
+        android:layout_width="48.0dip"
+        android:layout_height="48.0dip"
+        android:layout_alignRight="@+id/imageView1"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="14dp"
+        style="@style/toggleButton"
+        android:background="@drawable/ic_status_bg"
+      />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/check"
+        android:layout_alignBottom="@+id/check"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_marginLeft="18dp"
+        android:gravity="left"
+        android:text="Fast Charge Status :"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/logo" />
+    
 </RelativeLayout>
