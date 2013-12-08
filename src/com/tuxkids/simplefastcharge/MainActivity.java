@@ -56,6 +56,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		String enable  = "echo 1 > /sys/kernel/fast_charge/force_fast_charge";
 		String disable = "echo 0 > /sys/kernel/fast_charge/force_fast_charge";
 		String close = "exit";	
+		
 		if (isChecked) {
 		execCommand(enable);
 		execCommand(close);
